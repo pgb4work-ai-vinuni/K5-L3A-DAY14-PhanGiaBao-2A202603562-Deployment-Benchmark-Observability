@@ -1,5 +1,5 @@
-# Không copy những file này vào Docker image
-# Lý do: giảm context size, tăng security
+# Khong copy nhung file nay vao Docker image
+# Ly do: giam context size, tang security
 
 # Python
 __pycache__/
@@ -23,7 +23,7 @@ env/
 .DS_Store
 Thumbs.db
 
-# Secrets — QUAN TRỌNG: không bao giờ đưa .env vào image
+# Secrets - QUAN TRONG: khong bao gio dua .env vao image
 .env
 .env.*
 !.env.example
@@ -32,7 +32,7 @@ Thumbs.db
 .git/
 .gitignore
 
-# Docs và test
+# Docs va test
 *.md
 tests/
 docs/

@@ -1,0 +1,27 @@
+# Quality gate: chạy eval trên golden dataset cho mỗi pull request.
+# run_eval.py trả exit code 1 khi accuracy < --min-accuracy (hoặc có regression so với --baseline)
+# → step fail → job đỏ → đặt job này là "required status check" để chặn merge.
+name: quality-gate
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 06-lab-complete/benchmark-observability/develop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Start agent v2
+        run: |
+          AGENT_VERSION=v2 MOCK_ERROR_RATE=0 PORT=8000 python app.py > agent.log 2>&1 &
+          for i in $(seq 30); do curl -sf http://localhost:8000/health && break; sleep 1; done
+      - name: Run eval (fail if accuracy < 85%)
+        run: python eval/run_eval.py --url http://localhost:8000 --min-accuracy 0.85
